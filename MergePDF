@@ -1,0 +1,83 @@
+#This line below can be deleted after the first run - it is used to first install the pdf package
+#------------------------------------------------------------------
+!pip install PyPDF2
+#------------------------------------------------------------------
+
+import PyPDF2
+import re
+import os
+
+from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
+
+# create input folder in Juypter files
+# add all PDF's to the input folder of your choice in Juypter notebook
+# enter input folder file path below
+# create output folder in Juypter notebook
+# run the script - the merged pdf will appear as 'merged.pdf' in documents
+# save merged pdf to local files - if you need to see which individual pages were included check in output folder
+
+#------------- CHANGE THESE VARIABLES - SELECT FILE PATH ---
+InputFolder = r"YOUR INPUT FOLDER FILEPATH HERE"
+OutputFolder = r"YOUR OUTPUT FOLDER FILEPATH HERE"
+# -----------------------------------------------------------
+
+
+# -------------IF YOU NEED TO SEARCH TERMS CHANGE HERE ------
+String = "1986|for and on behalf of"
+# ------------------------------------------------------------
+
+
+OutputPath = OutputFolder + 'document-page%s.pdf'
+
+
+for foldername,subfolders,files in os.walk(InputFolder):
+    for file in files:
+     
+        object = PyPDF2.PdfFileReader(os.path.join(foldername,file), "rb")
+        
+        
+        NumPages = object.getNumPages()
+
+
+        for i in range(0, NumPages):
+                PageObj = object.getPage(i)
+                
+                Text = PageObj.extractText()
+        
+                ResSearch = re.search(String, Text)
+            
+                if ResSearch is not None:
+                    PageFound = i
+                
+                if ResSearch is None:
+                    continue 
+                    
+                print (PageFound)
+                print (file)
+                    
+
+                output = PdfFileWriter()
+                
+                PageFound1 = str(PageFound)
+                
+                file1 = str(file)
+        
+                output.addPage(object.getPage(PageFound))
+                with open(OutputPath % (file1 + PageFound1), "wb") as outputStream:
+                     output.write(outputStream)
+            
+        
+
+loc = (OutputFolder)
+
+x = [loc+"\\"+a for a in os.listdir(loc) if a.endswith(".pdf") or a.endswith(".PDF")]
+
+merger = PdfFileMerger()
+for pdf in x:
+    merger.append(open(pdf,'rb'))
+with open("merged.pdf", "wb") as fout:
+    merger.write(fout)
+
+#merged docs will be saved to documents - to find sort by most recently modified
+    
+              
