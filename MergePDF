@@ -1,3 +1,5 @@
+#Python code to search and merge PDF pages
+
 #This line below can be deleted after the first run - it is used to first install the pdf package
 #------------------------------------------------------------------
 !pip install PyPDF2
